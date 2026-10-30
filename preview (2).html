@@ -1,0 +1,843 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlantOS | Smart Irrigation</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg:#0b1220;
+  --panel:#141f30;
+  --panel2:#1a293c;
+  --green:#45e69a;
+  --muted:#91a1b6;
+  --red:#ff6877;
+  --blue:#61aaff;
+  --border:#29394e;
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body {
+  background:var(--bg);
+  color:#f5f8fc;
+  font-family:Inter,Arial,sans-serif;
+  min-height:100vh;
+}
+
+.app {
+  max-width:1250px;
+  margin:auto;
+  padding:25px;
+}
+
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:18px;
+  margin-bottom:30px;
+}
+
+.brand {
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.logo {
+  height:48px;
+  width:48px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  background:#164a37;
+  font-size:26px;
+}
+
+.brand h1 {
+  font-size:22px;
+  letter-spacing:1px;
+}
+
+.brand p {
+  font-size:11px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+.connection {
+  display:flex;
+  gap:9px;
+  align-items:center;
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:12px 17px;
+  border-radius:30px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.dot {
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#ff6877;
+}
+
+.dot.online {
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+}
+
+.welcome {
+  margin-bottom:25px;
+}
+
+.welcome h2 {
+  font-size:27px;
+  margin-bottom:8px;
+}
+
+.welcome p {
+  color:var(--muted);
+  font-size:13px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:17px;
+}
+
+.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:19px;
+  padding:22px;
+  min-width:0;
+}
+
+.card h3 {
+  font-size:14px;
+  margin-bottom:17px;
+  color:#dce7f5;
+}
+
+.moisture-card {
+  grid-column:span 7;
+}
+
+.system-card {
+  grid-column:span 5;
+}
+
+.control-card {
+  grid-column:span 7;
+}
+
+.info-card {
+  grid-column:span 5;
+}
+
+.full-card {
+  grid-column:span 12;
+}
+
+.big-number {
+  font-size:57px;
+  font-weight:800;
+  letter-spacing:-2px;
+}
+
+.big-number span {
+  font-size:23px;
+  color:var(--muted);
+}
+
+.moisture-label {
+  color:var(--green);
+  font-size:13px;
+  margin-top:8px;
+}
+
+.progress {
+  height:13px;
+  background:#26364a;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:23px;
+}
+
+.progress-fill {
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,#24b978,#69f0a8);
+  border-radius:20px;
+  transition:width .5s;
+}
+
+.thresholds {
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:11px;
+  margin-top:12px;
+}
+
+.status-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.status-box {
+  background:var(--panel2);
+  padding:18px;
+  border-radius:13px;
+}
+
+.status-box p {
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:12px;
+}
+
+.status {
+  font-size:16px;
+  font-weight:800;
+  color:var(--red);
+}
+
+.status.on {
+  color:var(--green);
+}
+
+.mode-switch {
+  display:flex;
+  background:#0c1625;
+  padding:5px;
+  border-radius:12px;
+  gap:5px;
+  margin-bottom:20px;
+}
+
+.mode-switch button {
+  flex:1;
+  background:transparent;
+  color:var(--muted);
+  padding:13px 8px;
+  border:0;
+  border-radius:9px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.mode-switch button.active {
+  background:#174a36;
+  color:var(--green);
+}
+
+.description {
+  background:#1a293c;
+  padding:15px;
+  border-radius:12px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+  margin-bottom:20px;
+}
+
+.pump-controls {
+  display:flex;
+  gap:12px;
+}
+
+.action {
+  border:0;
+  padding:15px 12px;
+  flex:1;
+  border-radius:11px;
+  font-weight:800;
+  cursor:pointer;
+  font-size:13px;
+  transition:.2s;
+}
+
+.action:disabled {
+  opacity:.3;
+  cursor:not-allowed;
+}
+
+.start {
+  background:var(--green);
+  color:#092719;
+}
+
+.stop {
+  background:#49212a;
+  color:#ff929d;
+}
+
+.reset {
+  background:#263c58;
+  color:#8cc2ff;
+  padding:11px 16px;
+  border:0;
+  border-radius:9px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.metrics {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.metric p {
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:8px;
+}
+
+.metric strong {
+  font-size:23px;
+}
+
+.info-list {
+  display:grid;
+  gap:17px;
+}
+
+.info-row {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+}
+
+.info-row span {
+  color:var(--muted);
+}
+
+.info-row strong {
+  text-align:right;
+}
+
+.log {
+  background:#0c1625;
+  border-radius:12px;
+  padding:15px;
+  font-family:monospace;
+  font-size:12px;
+  color:#9bb1c8;
+  min-height:85px;
+  max-height:160px;
+  overflow:auto;
+  line-height:1.9;
+}
+
+footer {
+  text-align:center;
+  color:#607188;
+  padding:28px 0 5px;
+  font-size:11px;
+}
+
+#notice {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:13px;
+  min-height:18px;
+}
+
+@media(max-width:750px) {
+  .app {padding:15px;}
+  .moisture-card,.system-card,
+  .control-card,.info-card {
+    grid-column:span 12;
+  }
+  .welcome h2 {font-size:22px;}
+  .big-number {font-size:48px;}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+  <div class="brand">
+    <div class="logo">🌱</div>
+    <div>
+      <h1>PlantOS</h1>
+      <p>INTELLIGENT IRRIGATION SYSTEM</p>
+    </div>
+  </div>
+
+  <div class="connection">
+    <div class="dot" id="connectionDot"></div>
+    <span id="connectionText">CONNECTING...</span>
+  </div>
+</header>
+
+<div class="welcome">
+  <h2>Smart Irrigation Dashboard</h2>
+  <p>Monitor soil conditions and control your watering system.</p>
+</div>
+
+<div class="grid">
+
+  <!-- MOISTURE -->
+  <section class="card moisture-card">
+    <h3>🌿 LIVE SOIL MOISTURE</h3>
+
+    <div class="big-number">
+      <span id="moisture">--</span><span>%</span>
+    </div>
+
+    <div class="moisture-label" id="soilCondition">
+      Waiting for sensor...
+    </div>
+
+    <div class="progress">
+      <div class="progress-fill" id="moistureFill"></div>
+    </div>
+
+    <div class="thresholds">
+      <span>DRY: 0%</span>
+      <span>WATERING START: 35%</span>
+      <span>WET: 100%</span>
+    </div>
+  </section>
+
+  <!-- SYSTEM STATUS -->
+  <section class="card system-card">
+    <h3>⚡ LIVE SYSTEM STATUS</h3>
+
+    <div class="status-grid">
+
+      <div class="status-box">
+        <p>RELAY</p>
+        <div class="status" id="relay">OFF</div>
+      </div>
+
+      <div class="status-box">
+        <p>WATER PUMP</p>
+        <div class="status" id="pump">OFF</div>
+      </div>
+
+      <div class="status-box">
+        <p>CONTROL MODE</p>
+        <div class="status on" id="mode">AUTO</div>
+      </div>
+
+      <div class="status-box">
+        <p>SENSOR</p>
+        <div class="status" id="sensor">CHECKING</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTROL PANEL -->
+  <section class="card control-card">
+    <h3>🎛 WATERING CONTROL PANEL</h3>
+
+    <div class="mode-switch">
+      <button id="autoButton" class="active"
+        onclick="changeMode('auto')">
+        AUTO MODE
+      </button>
+
+      <button id="manualButton"
+        onclick="changeMode('manual')">
+        MANUAL MODE
+      </button>
+    </div>
+
+    <div class="description" id="modeDescription">
+      Automatic mode is active. The ESP32 controls the pump
+      according to the soil moisture readings.
+      Watering starts at 35% and stops at 55%.
+    </div>
+
+    <div class="pump-controls">
+      <button class="action start" id="onButton"
+        onclick="controlPump('on')" disabled>
+        ▶ PUMP ON
+      </button>
+
+      <button class="action stop" id="offButton"
+        onclick="controlPump('off')" disabled>
+        ■ PUMP OFF
+      </button>
+    </div>
+
+    <div id="notice">Waiting for ESP32...</div>
+  </section>
+
+  <!-- DEVICE INFORMATION -->
+  <section class="card info-card">
+    <h3>📡 DEVICE INFORMATION</h3>
+
+    <div class="info-list">
+      <div class="info-row">
+        <span>Raw sensor reading</span>
+        <strong id="raw">----</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Safety lock</span>
+        <strong id="safety">CHECKING</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Connected devices</span>
+        <strong id="clients">--</strong>
+      </div>
+
+      <div class="info-row">
+        <span>ESP32 uptime</span>
+        <strong id="uptime">--</strong>
+      </div>
+
+      <div class="info-row">
+        <span>Wi-Fi address</span>
+        <strong>192.168.4.1</strong>
+      </div>
+    </div>
+
+    <br>
+    <button class="reset" onclick="resetSafety()">
+      RESET SAFETY LOCK
+    </button>
+  </section>
+
+  <!-- ACTIVITY -->
+  <section class="card full-card">
+    <h3>📋 SYSTEM ACTIVITY</h3>
+    <div class="log" id="activity">
+      PlantOS dashboard initialized...
+      <br>Waiting for ESP32 connection...
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  PlantOS · SMART PLANT WATERING SYSTEM · POWERED BY ESP32
+</footer>
+
+</div>
+
+<script>
+
+// =====================================
+// ESP32 ADDRESS
+// =====================================
+
+const ESP32 = "http://192.168.4.1";
+
+let isConnected = false;
+let autoMode = true;
+let sensorHasError = true;
+let safetyIsLocked = false;
+
+// =====================================
+// ACTIVITY LOG
+// =====================================
+
+function log(message) {
+  const box = document.getElementById("activity");
+  const time = new Date().toLocaleTimeString();
+
+  box.innerHTML += "<br>[" + time + "] " + message;
+  box.scrollTop = box.scrollHeight;
+}
+
+// =====================================
+// NOTIFICATION
+// =====================================
+
+function notify(message) {
+  document.getElementById("notice").textContent = message;
+}
+
+// =====================================
+// CONNECTION
+// =====================================
+
+function connectionStatus(ok) {
+
+  isConnected = ok;
+
+  document.getElementById("connectionDot")
+    .classList.toggle("online", ok);
+
+  document.getElementById("connectionText")
+    .textContent = ok ? "ESP32 CONNECTED" : "ESP32 OFFLINE";
+}
+
+// =====================================
+// STATUS INDICATOR
+// =====================================
+
+function indicator(id, state) {
+
+  const el = document.getElementById(id);
+
+  el.textContent = state ? "ON" : "OFF";
+
+  el.className = state ? "status on" : "status";
+}
+
+// =====================================
+// FETCH STATUS
+// =====================================
+
+async function refreshDashboard() {
+
+  try {
+
+    const response = await fetch(
+      ESP32 + "/status?t=" + Date.now(),
+      {cache:"no-store"}
+    );
+
+    if (!response.ok) throw new Error("Status error");
+
+    const data = await response.json();
+
+    connectionStatus(true);
+
+    // Moisture
+    const moisture = Number(data.moisture);
+
+    document.getElementById("moisture").textContent =
+      moisture;
+
+    document.getElementById("moistureFill").style.width =
+      Math.max(0, Math.min(100, moisture)) + "%";
+
+    let condition = "SOIL CONDITION NORMAL";
+
+    if (moisture <= 35) condition = "SOIL IS DRY";
+    if (moisture >= 55) condition = "SOIL IS MOIST";
+
+    document.getElementById("soilCondition").textContent =
+      condition;
+
+    // Raw value
+    document.getElementById("raw").textContent =
+      data.raw;
+
+    // Relay and pump command status
+    indicator("relay", Boolean(data.relay));
+    indicator("pump", Boolean(data.pump));
+
+    // Mode
+    autoMode = Boolean(data.automatic);
+
+    document.getElementById("mode").textContent =
+      autoMode ? "AUTO" : "MANUAL";
+
+    document.getElementById("autoButton")
+      .classList.toggle("active", autoMode);
+
+    document.getElementById("manualButton")
+      .classList.toggle("active", !autoMode);
+
+    document.getElementById("modeDescription").textContent =
+      autoMode
+      ? "Automatic mode is active. ESP32 controls watering. Pump starts at 35% and stops at 55%."
+      : "Manual mode is active. Use PUMP ON and PUMP OFF buttons to control watering.";
+
+    // Sensor health
+    sensorHasError = Boolean(data.sensorError);
+
+    const sensor = document.getElementById("sensor");
+
+    sensor.textContent =
+      sensorHasError ? "ERROR" : "WORKING";
+
+    sensor.className =
+      sensorHasError ? "status" : "status on";
+
+    // Safety
+    safetyIsLocked = Boolean(data.safetyLock);
+
+    document.getElementById("safety").textContent =
+      safetyIsLocked ? "LOCKED" : "NORMAL";
+
+    // Device information
+    document.getElementById("clients").textContent =
+      data.clients;
+
+    document.getElementById("uptime").textContent =
+      formatUptime(data.uptime);
+
+    // Manual controls
+    const manualAvailable =
+      !autoMode && !sensorHasError && !safetyIsLocked;
+
+    document.getElementById("onButton").disabled =
+      !manualAvailable;
+
+    document.getElementById("offButton").disabled =
+      autoMode;
+
+  } catch(error) {
+
+    connectionStatus(false);
+
+    notify("Unable to reach ESP32. Check Wi-Fi connection.");
+  }
+}
+
+// =====================================
+// UPTIME
+// =====================================
+
+function formatUptime(seconds) {
+
+  seconds = Number(seconds) || 0;
+
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  return h + "h " + m + "m " + s + "s";
+}
+
+// =====================================
+// MODE CONTROL
+// =====================================
+
+async function changeMode(mode) {
+
+  if (!isConnected) {
+    notify("ESP32 is offline.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      ESP32 + "/mode?value=" + mode
+    );
+
+    const result = await response.json();
+
+    if (result.error) {
+      notify(result.error);
+      return;
+    }
+
+    notify(mode.toUpperCase() + " MODE ENABLED");
+
+    log(mode.toUpperCase() + " mode selected");
+
+    await refreshDashboard();
+
+  } catch(error) {
+
+    notify("Mode change failed.");
+  }
+}
+
+// =====================================
+// MANUAL PUMP CONTROL
+// =====================================
+
+async function controlPump(state) {
+
+  if (autoMode) {
+    notify("Switch to MANUAL mode first.");
+    return;
+  }
+
+  if (sensorHasError || safetyIsLocked) {
+    notify("Pump blocked by safety system.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      ESP32 + "/pump?state=" + state
+    );
+
+    const result = await response.json();
+
+    if (result.error) {
+      notify(result.error);
+      return;
+    }
+
+    notify("Pump " + state.toUpperCase() + " command sent.");
+
+    log("Manual pump command: " + state.toUpperCase());
+
+    await refreshDashboard();
+
+  } catch(error) {
+
+    notify("Pump command failed.");
+  }
+}
+
+// =====================================
+// RESET SAFETY
+// =====================================
+
+async function resetSafety() {
+
+  if (!isConnected) {
+    notify("ESP32 is offline.");
+    return;
+  }
+
+  if (!confirm("Reset safety lock? Ensure pump is OFF.")) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(ESP32 + "/reset");
+
+    const result = await response.json();
+
+    notify(result.message || result.error);
+
+    log("Safety reset requested");
+
+    await refreshDashboard();
+
+  } catch(error) {
+
+    notify("Safety reset failed.");
+  }
+}
+
+// =====================================
+// LIVE REFRESH
+// =====================================
+
+refreshDashboard();
+
+setInterval(refreshDashboard, 2000);
+
+</script>
+</body>
+</html>
